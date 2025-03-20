@@ -128,7 +128,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="learn.c" />
-    <ClCompile Include="thread1.c" />
+    <ClCompile Include="maze.c" />
+    <ClCompile Include="multiply.c" />
+    <ClCompile Include="sudoku.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

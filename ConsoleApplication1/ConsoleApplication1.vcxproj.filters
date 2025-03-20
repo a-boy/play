@@ -18,7 +18,13 @@
     <ClCompile Include="learn.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="thread1.c">
+    <ClCompile Include="maze.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="multiply.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="sudoku.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

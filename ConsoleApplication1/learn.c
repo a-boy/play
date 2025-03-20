@@ -8,7 +8,7 @@ void someFunction(int arg)
 }
 
 int main(void) {
-	printf("Hello World! ÄãºÃ ÊÀ½ç\n");
+	printf("Hello World! ä½ å¥½ ä¸–ç•Œ\n");
 
 	int myAge = 43; // variable declaration
 	int* ptr = &myAge; // pointer declaration
@@ -23,12 +23,12 @@ int main(void) {
 	//// Constant pointer and pointer to constant in C
 	int num1=1, num2=2;
 	int* const p = &num2;
-	// p = &num1; //´íÎó,Ö¸Õë±¾ÉíÊÇ³£Á¿£¬²»¿ÉĞŞ¸ÄµØÖ·
+	// p = &num1; //é”™è¯¯,æŒ‡é’ˆæœ¬èº«æ˜¯å¸¸é‡ï¼Œä¸å¯ä¿®æ”¹åœ°å€
 	*p = 45;
 	printf("num=%-9d%-9d\n",num1, num2);
 
 	int const* p2c = &num1;
-	// *p2c = 100;//´íÎó Ö¸ÕëÖ¸ÏòµÄ³£Á¿²»¿É¸ü¸Ä
+	// *p2c = 100;//é”™è¯¯ æŒ‡é’ˆæŒ‡å‘çš„å¸¸é‡ä¸å¯æ›´æ”¹
 
 
 	//unsigned short char int long  long long

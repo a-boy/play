@@ -231,3 +231,16 @@ parseInt('0111011011010011',2)==0b0111011011010011  //30419
 
 ```
 
+
+```js
+const arrayLike = {
+  length: 3,
+  unrelated: "foo",
+  0: 5,
+  2: 4,
+  3: 3, // ignored by with() since length is 3
+};
+console.log(Array.prototype.with.call(arrayLike, 0, 1));
+// [ 1, undefined, 4 ]
+
+```

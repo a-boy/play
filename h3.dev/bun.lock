@@ -1,0 +1,21 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "h3": "^2.0.0-beta.1",
+      },
+    },
+  },
+  "packages": {
+    "cookie-es": ["cookie-es@2.0.0", "", {}, "sha512-RAj4E421UYRgqokKUmotqAwuplYw15qtdXfY+hGzgCJ/MBjCVZcSoHK/kH9kocfjRjcDME7IiDWR/1WX1TM2Pg=="],
+
+    "fetchdts": ["fetchdts@0.1.5", "", {}, "sha512-GCxyHdCCUm56atms+sIjOsAENvhebk3HAM1CfzgKCgMRjPUylpkkPmNknsaXe1gDRqM3cJbMhpkXMhCzXSE+Jg=="],
+
+    "h3": ["h3@2.0.0-beta.1", "", { "dependencies": { "cookie-es": "^2.0.0", "fetchdts": "^0.1.5", "rou3": "^0.7.3", "srvx": "^0.8.1" }, "peerDependencies": { "crossws": "^0.4.1" }, "optionalPeers": ["crossws"] }, "sha512-sAhBVWbCi2AzApSLZhk41Rmiz+gjPhoAEqjJ96VH3OwyS3Co2kHVx3FZk0/OCCrzKWzYx3Pwf5WbEKDQ2plifg=="],
+
+    "rou3": ["rou3@0.7.3", "", {}, "sha512-KKenF/hB2iIhS1ohj226LT+/8uKCBpSMqeS4V1UPN9vad99uLoyIhrULRRB1skaB40LQHcBlSsAi3sT8MaoDDQ=="],
+
+    "srvx": ["srvx@0.8.2", "", { "dependencies": { "cookie-es": "^2.0.0" } }, "sha512-anC1+7B6tryHQd4lFVSDZIfZ1QwJwqm5h1iveKwC1E40PA8nOD50hEt7+AlUoGc9jW3OdmztWBqf4yHCdCPdRQ=="],
+  }
+}

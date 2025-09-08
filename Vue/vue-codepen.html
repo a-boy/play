@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Vue CDN usage (global build, Composition API)</title>
+ </head>
+<body>
+<!-- partial:index.partial.html -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<div id="app">{{ message }}</div>
+<!-- partial -->
+<script>
+const { createApp, ref } = Vue
+
+createApp({
+  setup() {
+    const message = ref('Hello Vue!')
+    return {
+      message
+    }
+  }
+}).mount('#app')
+</script>
+
+</body>
+</html>

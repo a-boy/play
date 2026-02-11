@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>IPv4 ⇄ 人性化 Unicode 转换</title>
+<style>
+  body { font-family: sans-serif; max-width: 700px; margin: 30px auto; }
+  input { width: 100%; padding: 6px; font-size: 16px; margin: 6px 0; }
+  button { padding: 6px 12px; margin: 6px 0; }
+  .result { margin-top: 10px; font-size: 18px; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>IPv4 ⇄ 人性化 Unicode 转换</h1>
+
+<label>IPv4 地址：</label>
+<input id="ip" placeholder="例如 142.250.180.14" />
+
+<button onclick="toCustom()">转为 Unicode 表示</button>
+<div class="result" id="out1"></div>
+
+<hr>
+
+<label>自定义编码（4 字符）：</label>
+<input id="uni" placeholder="例如 👉😺ЖΑ" />
+
+<button onclick="toIp()">还原 IPv4</button>
+<div class="result" id="out2"></div>
+
+<script>
+// 构造 256 字符表
+const base = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+// 我这里选了连续的 Unicode 可见字符（希腊 + 西里尔），确保总长 = 256
+let extra = "";
+for (let cp = 0x0370; extra.length < (256 - base.length); cp++) {
+  const ch = String.fromCharCode(cp);
+  if (/\s/.test(ch)) continue; // 跳过空白
+  extra += ch;
+}
+const CHARSET = (base + extra).slice(0, 256).split("");
+
+// 建立反查表
+const REVERSE = {};
+CHARSET.forEach((c, i) => { REVERSE[c] = i; });
+
+function ipToBytes(ip) {
+  let parts = ip.trim().split(".");
+  if (parts.length !== 4) throw new Error("无效 IPv4");
+  return parts.map(x => {
+    let n = parseInt(x, 10);
+    if (n < 0 || n > 255) throw new Error("每段必须 0–255");
+    return n;
+  });
+}
+
+function bytesToIp(arr) {
+  return arr.join(".");
+}
+
+function toCustom() {
+  try {
+    const ip = document.getElementById("ip").value;
+    const bytes = ipToBytes(ip);
+    const out = bytes.map(b => CHARSET[b]).join("");
+    document.getElementById("out1").textContent = out;
+  } catch(e) {
+    document.getElementById("out1").textContent = "错误: " + e.message;
+  }
+}
+
+function toIp() {
+  try {
+    const s = document.getElementById("uni").value;
+    if (s.length !== 4) throw new Error("必须是 4 个字符");
+    const bytes = [];
+    for (let ch of s) {
+      if (!(ch in REVERSE)) throw new Error("字符不在映射表: " + ch);
+      bytes.push(REVERSE[ch]);
+    }
+    document.getElementById("out2").textContent = bytesToIp(bytes);
+  } catch(e) {
+    document.getElementById("out2").textContent = "错误: " + e.message;
+  }
+}
+</script>
+</body>
+</html>

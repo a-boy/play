@@ -1,0 +1,153 @@
+<details>
+  <summary>显示完整字符表 (16 × 16)</summary>
+
+  <style>
+    /* 表格样式（放在 details 内只影响此区域） */
+    .charset-table-wrap { margin-top: 12px; overflow:auto; }
+    table.charset-table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 900px;
+      margin: 8px 0;
+      font-family: "Segoe UI", Roboto, "Noto Sans", system-ui, sans-serif;
+      text-align: center;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    table.charset-table th, table.charset-table td {
+      border: 1px solid #eee;
+      padding: 10px;
+      vertical-align: middle;
+      min-width: 48px;
+    }
+    table.charset-table th {
+      background: #f7fafc;
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+    }
+    td.char-cell { cursor: pointer; transition: background .12s; position: relative; }
+    td.char-cell:hover { background: #f0f9ff; }
+    .char-glyph { font-size: 20px; display:block; margin-bottom:6px; }
+    .char-idx { font-size: 11px; color: #666; }
+    .copy-tip {
+      position: fixed;
+      right: 18px;
+      top: 18px;
+      background: rgba(44,62,80,0.95);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+      z-index: 9999;
+      display: none;
+      font-size: 13px;
+    }
+  </style>
+
+  <div class="charset-table-wrap">
+    <table class="charset-table" id="charsetTable">
+      <!-- JS 将动态填充表头与表格体 -->
+    </table>
+  </div>
+
+  <div class="copy-tip" id="copyTip">已复制</div>
+
+  <script>
+    // === 字符表（与页面其它部分保持一致） ===
+    const digits = "0123456789";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const greekSmall = "αβγδεζηθικλμνξοπρστυφχψω"; // 24
+    const hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもやゃゆゅよょらりるれろわゐゑをんゔゕゖ";
+    const katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤャユュヨョラリルレロワヰヱヲンヴヵヶ";
+    const cyrillic = Array.from({length: 28}, (_,i)=>String.fromCharCode(0x0400+i)).join("");
+    const CHARSET = (digits + upper + lower + greekSmall + hiragana + katakana + cyrillic).split('');
+
+    // 安全检查
+    if (CHARSET.length !== 256) {
+      console.warn("警告：CHARSET 长度不是 256，而是", CHARSET.length);
+    }
+
+    // 构造表格：列头为 0x0 .. 0xF，行头为 0x00,0x10,0x20...
+    const table = document.getElementById('charsetTable');
+
+    // 生成表头
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    const corner = document.createElement('th'); corner.textContent = ''; headRow.appendChild(corner);
+    for (let c = 0; c < 16; c++) {
+      const th = document.createElement('th');
+      th.textContent = c.toString(16).toUpperCase().padStart(1,'0');
+      headRow.appendChild(th);
+    }
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    // 生成表体
+    const tbody = document.createElement('tbody');
+    for (let r = 0; r < 16; r++) {
+      const tr = document.createElement('tr');
+      const rowIndex = r * 16;
+      const th = document.createElement('th');
+      th.textContent = ('0x' + rowIndex.toString(16).toUpperCase().padStart(2,'0'));
+      tr.appendChild(th);
+
+      for (let c = 0; c < 16; c++) {
+        const idx = rowIndex + c;
+        const ch = CHARSET[idx] || '�';
+        const td = document.createElement('td');
+        td.className = 'char-cell';
+        td.dataset.index = idx;
+        td.dataset.char = ch;
+
+        // Glyph and index display
+        const glyph = document.createElement('span');
+        glyph.className = 'char-glyph';
+        glyph.textContent = ch;
+
+        const idxSpan = document.createElement('span');
+        idxSpan.className = 'char-idx';
+        idxSpan.textContent = idx.toString().padStart(3,'0') + ' / 0x' + idx.toString(16).toUpperCase().padStart(2,'0');
+
+        td.appendChild(glyph);
+        td.appendChild(idxSpan);
+
+        // Tooltip via title: 显示 Unicode 码位
+        const cp = ch.codePointAt(0);
+        if (!isNaN(cp)) {
+          td.title = 'U+' + cp.toString(16).toUpperCase().padStart(4,'0') + '    ' + (typeof ch === 'string' ? ch : '');
+        }
+
+        // 点击复制字符到剪贴板
+        td.addEventListener('click', async (e) => {
+          const charToCopy = e.currentTarget.dataset.char;
+          try {
+            await navigator.clipboard.writeText(charToCopy);
+            showCopyTip('已复制: ' + charToCopy + ' (index ' + idx + ')');
+            // 简短高亮效果
+            e.currentTarget.style.background = '#e6fffa';
+            setTimeout(()=> e.currentTarget.style.background = '', 220);
+          } catch (err) {
+            showCopyTip('复制失败，请手动复制');
+          }
+        });
+
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+
+    // 复制反馈
+    const tip = document.getElementById('copyTip');
+    let tipTimer = null;
+    function showCopyTip(text) {
+      tip.textContent = text;
+      tip.style.display = 'block';
+      if (tipTimer) clearTimeout(tipTimer);
+      tipTimer = setTimeout(()=> tip.style.display = 'none', 1500);
+    }
+  </script>
+</details>

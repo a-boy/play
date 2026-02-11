@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IPv4 ↔ Unicode Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #f0f4ff, #ffeef8);
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      color: #444;
+    }
+    input, button {
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      font-size: 14px;
+    }
+    button {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #357ab7;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #d6336c;
+    }
+    details {
+      margin-top: 20px;
+      text-align: left;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 10px auto;
+    }
+    td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      width: 30px;
+      height: 30px;
+      font-family: "Arial Unicode MS", sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    td:hover {
+      background: #ffefc0;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h1>IPv4 ↔ Unicode Converter</h1>
+  <div>
+    <input id="ipv4" type="text" placeholder="输入 IPv4 (e.g. 142.250.180.14)">
+    <button onclick="toUnicode()">IPv4 → Unicode</button>
+  </div>
+  <div>
+    <input id="unicodeStr" type="text" placeholder="输入4字符编码">
+    <button onclick="toIPv4()">Unicode → IPv4</button>
+  </div>
+  <div id="result"></div>
+
+  <details open>
+    <summary>字符映射表(0–255) 点击输入</summary>
+    <table id="charTable"></table>
+  </details>
+
+  <script>
+    // 映射表：完整西里尔块 (U+0400–U+04FF)
+   //const CHARSET = [];
+   // for (let i = 0; i < 256; i++) {
+   //   CHARSET.push(String.fromCharCode(0x0400 + i));
+   // } 
+	
+	// === 字符表（与页面其它部分保持一致） ===
+    const digits = "0123456789";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const greekSmall = "αβγδεζηθικλμνξοπρστυφχψω"; // 24
+    const hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもやゃゆゅよょらりるれろわゐゑをんゔゕゖ";
+    const katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤャユュヨョラリルレロワヰヱヲンヴヵヶ";
+    const cyrillic = Array.from({length: 28}, (_,i)=>String.fromCharCode(0x0400+i)).join("");
+    const CHARSET = (digits + upper + lower + greekSmall + hiragana + katakana + cyrillic).split('');
+
+    // 安全检查
+    if (CHARSET.length !== 256) {
+      console.warn("警告：CHARSET 长度不是 256，而是", CHARSET.length);
+    }
+    // IPv4 → Unicode
+    function toUnicode() {
+      const ipv4 = document.getElementById("ipv4").value.trim();
+      const parts = ipv4.split(".");
+      if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
+        document.getElementById("result").innerText = "❌ IPv4格式错误";
+        return;
+      }
+      const chars = parts.map(p => CHARSET[parseInt(p)]);
+      document.getElementById("unicodeStr").value = chars.join("");
+      document.getElementById("result").innerText = chars.join("");
+    }
+
+    // Unicode → IPv4
+    function toIPv4() {
+      const str = document.getElementById("unicodeStr").value.trim();
+      if (str.length !== 4) {
+        document.getElementById("result").innerText = "❌ 请输入4个字符";
+        return;
+      }
+      const nums = [];
+      for (let ch of str) {
+        const idx = CHARSET.indexOf(ch);
+        if (idx === -1) {
+          document.getElementById("result").innerText = "❌ 字符不在映射表中";
+          return;
+        }
+        nums.push(idx);
+      }
+      document.getElementById("result").innerText = nums.join(".");
+    }
+
+    // 点击表格格子 → 自动输入
+    function addCharToInput(ch) {
+      const input = document.getElementById("unicodeStr");
+      if (input.value.length >= 4) {
+        input.value = ""; // 清空重新输入
+      }
+      input.value += ch;
+      if (input.value.length === 4) {
+        toIPv4();
+      }
+    }
+
+    // 生成16×16字符表
+    function buildCharTable() {
+      const tbl = document.getElementById("charTable");
+      for (let row = 0; row < 16; row++) {
+        const tr = document.createElement("tr");
+        for (let col = 0; col < 16; col++) {
+          const td = document.createElement("td");
+          const idx = row * 16 + col;
+          td.textContent = CHARSET[idx];
+          td.title = idx + " (U+" + (0x0400+idx).toString(16).toUpperCase() + ")";
+          td.onclick = () => addCharToInput(CHARSET[idx]);
+          tr.appendChild(td);
+        }
+        tbl.appendChild(tr);
+      }
+    }
+    buildCharTable();
+  </script>
+</body>
+</html>

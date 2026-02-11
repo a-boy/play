@@ -1,0 +1,1 @@
+https://longcat.chat/platform/docs/zh 采用 Vuepress2.0 构建的文档系统。

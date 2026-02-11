@@ -1,0 +1,18 @@
+用一句话介绍 Ollama
+edit
+Ollama 是一个开源的工具，让你可以轻松地通过 Hugging Face 平台来运行和研究各种大型语言模型（LLM）。
+
+Ollama is a type of creature from Peruvian folklore that is often depicted as a large, fluffy creature with long ears and a playful demeanor. 把这句话翻译成中文
+edit
+Ollama是秘鲁传说中一种形态独特的生物，经常被描绘成一只巨大、蓬松的生物，长着大耳朵，性格活泼。
+
+Here’s another slightly more poetic option:
+
+Ollama是秘鲁的传说中的一只大而毛茸茸的巨型生物，拥有着长长的耳朵和友善的性格。
+
+Which one do you prefer?
+
+2
+edit
+Okay, 2.
+

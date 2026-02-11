@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LongCat Chat</title>
+  <style>
+    body { font-family: sans-serif; }
+    .container { width: 80%; margin: 20px auto; }
+    .message { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; }
+    .message-type { margin-bottom: 10px; }
+    .message-type-header { margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>LongCat Chat</h1>
+
+    <div class="message">
+      <div class="message-type">
+        <p>Hello!</p>
+      </div>
+      <div class="message-type-header">
+        <p>Prompt: Hello!</p>
+      </div>
+    </div>
+
+    <div class="message">
+      <div class="message-type">
+        <p>You are a helpful AI assistant.</p>
+      </div>
+      <div class="message-type-header">
+        <p>Role: Assistant</p>
+      </div>
+    </div>
+
+    <div class="message">
+      <div class="message-type">
+        <p>What would you like to chat about?</p>
+      </div>
+      <div class="message-type-header">
+        <p>Options:  Ask a question, chat, quit</p>
+      </div>
+    </div>
+
+    <div class="message">
+      <div class="message-type">
+        <p>Ask a question:</p>
+      </div>
+      <div class="message-type-header">
+        <p>Question:  Why is the sky blue?</p>
+      </div>
+    </div>
+
+    <script>
+      //  Example API call - Replace with your actual API endpoint and key
+      async function callApiLongCat() {
+        try {
+          const response = await fetch('https://api.longcat.chat/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer YOUR_APP_KEY'
+            },
+            body: JSON.stringify({
+              model: 'LongCat-Flash-Chat',
+              messages: [
+                { role: 'user', content: 'Hello!' }
+              ],
+              max_tokens: 1000
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          // Process the data (example)
+          console.log(data);
+
+        } catch (error) {
+          console.error('Error calling API:', error);
+        }
+      }
+
+      callApiLongCat();
+    </script>
+  </div>
+</body>
+</html>

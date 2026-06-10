@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Computing VM • High‑Performance Math Workloads</title>
+    <meta name="description" content="Run high‑performance math workloads in the cloud with pre‑configured, secure virtual machines optimized for computational science, data analysis, and AI." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container header-grid">
+        <a class="logo" href="#">Math Computing VM</a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <a class="btn btn-primary" href="#get-started">Get Started</a>
+        </nav>
+        <button class="nav-toggle" aria-label="Open navigation" aria-expanded="false">
+          <span class="hamburger"></span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <h1>Instant math compute VMs for researchers, analysts, and teams</h1>
+            <p>Spin up a dedicated virtual machine pre-configured with Python, Julia, MATLAB‑style tooling, GPU acceleration, and Jupyter — ready for your next model, algorithm, or simulation.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#get-started">Launch a VM</a>
+              <a class="btn btn-outline" href="#features">See features</a>
+            </div>
+            <div class="hero-trust">
+              <span class="trust-pill">No credit card required</span>
+              <span class="trust-pill">Pay as you go</span>
+              <span class="trust-pill">Secure + private</span>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="device">
+              <div class="device-screen">
+                <div class="code-sample">
+                  <div class="code-line"><span class="code-keyword">from</span> math_vm <span class="code-keyword">import</span> VM</div>
+                  <div class="code-line"><span class="code-comment"># 30s to launch, GPU-enabled</span></div>
+                  <div class="code-line"><span class="code-keyword">vm</span> = VM(<span class="code-string">"math-1"</span>, gpu=<span class="code-literal">True</span>)</div>
+                  <div class="code-line"><span class="code-keyword">vm</span>.start()</div>
+                  <div class="code-line"><span class="code-keyword">print</span>(<span class="code-string">"Jupyter: http://localhost:8888"</span>)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <header class="section-header">
+            <h2>Built for math, built for speed</h2>
+            <p>Everything you need to prototype, analyze, and compute — without wasting time on configuration and setup.</p>
+          </header>
+
+          <div class="cards-grid">
+            <article class="card">
+              <h3>Preconfigured stacks</h3>
+              <p>Instant VMs with Python, NumPy, SciPy, Jupyter, Julia, R, and popular math libraries already installed.</p>
+            </article>
+            <article class="card">
+              <h3>GPU &amp; multi‑core CPU</h3>
+              <p>Choose the right compute for your workload — from CPU‑only to powerful GPU instances with CUDA and ROCm support.</p>
+            </article>
+            <article class="card">
+              <h3>Secure &amp; isolated</h3>
+              <p>Each VM runs in its own virtual network with encrypted storage, private SSH, and optional VPN access.</p>
+            </article>
+            <article class="card">
+              <h3>API &amp; automation</h3>
+              <p>Provision, snapshot, and scale VMs via REST or CLI so you can script experiments and deploy reproducible compute environments.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section feature-highlight">
+        <div class="container feature-grid">
+          <div class="feature-copy">
+            <h2>Work in your favorite tools</h2>
+            <p>Access Jupyter, VS Code, or your own local IDE with secure SSH tunneling. Easily mount datasets and collaborate with teammates using shared workspaces.</p>
+            <ul class="feature-list">
+              <li><strong>Jupyter &amp; JupyterLab</strong> preinstalled and ready in seconds.</li>
+              <li><strong>VS Code Remote</strong> support with no extra setup.</li>
+              <li><strong>Data mounts</strong> (S3, Azure Blob, Google Cloud Storage).</li>
+              <li><strong>Snapshots</strong> so you can save and restore experiments instantly.</li>
+            </ul>
+          </div>
+          <div class="feature-media" aria-hidden="true">
+            <div class="feature-device">
+              <div class="feature-device-screen">
+                <div class="feature-code">
+                  <pre><code>mathvm create --name research-01 --cpu 8 --gpu 1
+mathvm ssh research-01
+jupyter lab --no-browser --port=8888
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="section pricing">
+        <div class="container">
+          <header class="section-header">
+            <h2>Simple pricing you can predict</h2>
+            <p>Pay per second with no long-term contracts. Scale up or down as experiments demand.</p>
+          </header>
+
+          <div class="pricing-grid">
+            <div class="pricing-card">
+              <h3>Starter</h3>
+              <p class="price"><span class="price-amount">$0.06</span><span class="price-unit">/hr</span></p>
+              <ul class="pricing-features">
+                <li>2 vCPU</li>
+                <li>8 GB RAM</li>
+                <li>50 GB SSD</li>
+                <li>1 snapshot</li>
+              </ul>
+              <a class="btn btn-secondary" href="#get-started">Start free</a>
+            </div>
+            <div class="pricing-card featured">
+              <span class="badge">Most popular</span>
+              <h3>Research</h3>
+              <p class="price"><span class="price-amount">$0.18</span><span class="price-unit">/hr</span></p>
+              <ul class="pricing-features">
+                <li>8 vCPU</li>
+                <li>32 GB RAM</li>
+                <li>200 GB NVMe</li>
+                <li>1 GPU (T4/A100)</li>
+                <li>Unlimited snapshots</li>
+              </ul>
+              <a class="btn btn-primary" href="#get-started">Deploy now</a>
+            </div>
+            <div class="pricing-card">
+              <h3>Scale</h3>
+              <p class="price"><span class="price-amount">$0.45</span><span class="price-unit">/hr</span></p>
+              <ul class="pricing-features">
+                <li>16 vCPU</li>
+                <li>64 GB RAM</li>
+                <li>500 GB NVMe</li>
+                <li>2 GPUs (A100/V100)</li>
+                <li>Dedicated network</li>
+              </ul>
+              <a class="btn btn-secondary" href="#get-started">Request demo</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section cta" id="get-started">
+        <div class="container cta-grid">
+          <div class="cta-copy">
+            <h2>Ready to compute?</h2>
+            <p>Create your first Math Computing VM in under a minute and start running experiments immediately.</p>
+            <a class="btn btn-primary btn-cta" href="#">Launch your VM</a>
+          </div>
+          <div class="cta-visual" aria-hidden="true">
+            <div class="stats">
+              <div class="stat">
+                <span class="stat-value">30s</span>
+                <span class="stat-label">to first VM</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value">99.9%</span>
+                <span class="stat-label">uptime SLA</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value">5x</span>
+                <span class="stat-label">faster than local</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="section faq">
+        <div class="container">
+          <header class="section-header">
+            <h2>Frequently asked questions</h2>
+            <p>Answers to the most common questions from math teams and researchers.</p>
+          </header>
+
+          <div class="faq-grid">
+            <div class="faq-item">
+              <h3>Can I bring my own license (MATLAB, Maple, etc.)?</h3>
+              <p>Yes. You can install your licensed software inside the VM and connect it to your license server. We also support installing open-source alternatives like GNU Octave and SymPy.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How do I access the VM remotely?</h3>
+              <p>Each VM provides secure SSH access and a built-in Jupyter endpoint. You can also connect via VS Code Remote SSH or through a private VPN tunnel.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How is my data protected?</h3>
+              <p>All storage is encrypted at rest and in transit. VMs run in isolated networks and we offer optional private networking and IAM controls.</p>
+            </div>
+            <div class="faq-item">
+              <h3>What happens when the VM is stopped?</h3>
+              <p>Stopped VMs do not incur compute charges (only storage). You can resume in seconds with your environment and data intact.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="#">Math Computing VM</a>
+          <p>Fast, secure compute for mathematics, simulation, and AI.</p>
+        </div>
+
+        <div class="footer-links">
+          <div>
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Careers</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+
+        <div class="footer-legal">
+          <p>&copy; <span id="year"></span> Math Computing VM. All rights reserved.</p>
+          <p><a href="#">Privacy</a> · <a href="#">Terms</a></p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

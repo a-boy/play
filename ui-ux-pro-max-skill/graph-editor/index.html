@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Editor • UI/UX Pro Max</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          colors: {
+            brand: {
+              primary: '#2563EB',
+              secondary: '#3B82F6',
+              cta: '#F97316',
+              surface: '#F8FAFC',
+              text: '#1E293B',
+            },
+          },
+          backdropBlur: {
+            xs: '2px',
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.15), transparent 55%),
+        radial-gradient(circle at 70% 20%, rgba(249, 115, 22, 0.15), transparent 55%),
+        #f8fafc;
+      color: #1e293b;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    .node {
+      cursor: grab;
+    }
+
+    .node:active {
+      cursor: grabbing;
+    }
+
+    .edge {
+      stroke: rgba(37, 99, 235, 0.8);
+      stroke-width: 3;
+      stroke-linecap: round;
+      pointer-events: none;
+    }
+
+    .edge.selected {
+      stroke: rgba(249, 115, 22, 0.9);
+    }
+
+    .node.selected .node-circle {
+      stroke: rgba(249, 115, 22, 0.9);
+      stroke-width: 4;
+    }
+
+    .node-label {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .focus-ring:focus-visible {
+      outline: 2px solid rgba(37, 99, 235, 0.9);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="min-h-screen flex flex-col">
+    <header class="glass sticky top-0 z-30 border-b border-white/20">
+      <div class="mx-auto flex max-w-6xl items-center justify-between p-4">
+        <div>
+          <h1 class="text-xl font-semibold text-brand-text">Graph Editor</h1>
+          <p class="mt-1 text-sm text-slate-600">Drag nodes, connect edges, and prototype graph layouts.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="resetBtn" class="focus-ring inline-flex items-center gap-2 rounded-lg bg-brand-primary/90 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary">
+            <span>Reset</span>
+          </button>
+          <button id="exportBtn" class="focus-ring inline-flex items-center gap-2 rounded-lg bg-brand-cta/95 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-cta">
+            Export JSON
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-hidden">
+      <div class="mx-auto flex h-full max-w-6xl gap-4 p-4">
+        <aside class="glass w-80 flex-shrink-0 rounded-2xl border border-white/20 p-4">
+          <h2 class="text-base font-semibold text-brand-text">Tools</h2>
+          <div class="mt-4 space-y-3">
+            <button id="addNodeBtn" class="focus-ring w-full rounded-xl border border-white/30 bg-white/40 px-4 py-2 text-left text-sm font-medium text-brand-text transition hover:bg-white/60">
+              Add node
+              <span class="ml-2 text-xs font-normal text-slate-500">Click canvas</span>
+            </button>
+            <button id="connectModeBtn" class="focus-ring w-full rounded-xl border border-white/30 bg-white/40 px-4 py-2 text-left text-sm font-medium text-brand-text transition hover:bg-white/60">
+              Connect nodes (click source, then target)
+            </button>
+            <button id="deleteBtn" class="focus-ring w-full rounded-xl border border-white/30 bg-white/40 px-4 py-2 text-left text-sm font-medium text-brand-text transition hover:bg-white/60">
+              Delete selected
+            </button>
+          </div>
+
+          <section class="mt-6">
+            <h3 class="text-sm font-semibold text-brand-text">Tips</h3>
+            <ul class="mt-2 space-y-1 text-xs text-slate-600">
+              <li>Drag nodes to reposition.</li>
+              <li>Shift-click to select multiple nodes.</li>
+              <li>Use the export button to copy JSON.</li>
+              <li>Keyboard: Esc to clear selection.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="relative flex flex-1 overflow-hidden rounded-3xl border border-white/20 bg-white/30 shadow-inner backdrop-blur-xl">
+          <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.14),transparent_60%)]" aria-hidden="true"></div>
+          <svg id="graphSvg" class="h-full w-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Graph editor canvas">
+            <defs>
+              <filter id="edgeGlow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </feMerge>
+            </defs>
+            <g id="edges" />
+            <g id="nodes" />
+          </svg>
+        </section>
+      </div>
+    </main>
+
+    <footer class="glass border-t border-white/20">
+      <div class="mx-auto max-w-6xl p-4 text-xs text-slate-500">
+        Built with a focus on usability, readability, and accessible interactions. Make sure contrast stays >= 4.5:1.
+      </div>
+    </footer>
+  </div>
+
+  <div id="toast" class="pointer-events-none fixed bottom-6 right-6 z-50 hidden max-w-sm rounded-2xl bg-white/90 p-4 text-sm shadow-lg backdrop-blur-xl">
+    <p id="toastText" class="text-slate-900"></p>
+  </div>
+
+  <script>
+    const state = {
+      nodes: [],
+      edges: [],
+      nextNodeId: 1,
+      nextEdgeId: 1,
+      selected: new Set(),
+      connectMode: false,
+      connectSource: null,
+      draggingNodeId: null,
+      dragOffset: { x: 0, y: 0 },
+    };
+
+    const svg = document.getElementById('graphSvg');
+    const nodesGroup = document.getElementById('nodes');
+    const edgesGroup = document.getElementById('edges');
+
+    const addNodeBtn = document.getElementById('addNodeBtn');
+    const connectModeBtn = document.getElementById('connectModeBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    function toastMessage(message) {
+      toastText.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('opacity-0');
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+      });
+
+      window.clearTimeout(toast._timeout);
+      toast._timeout = window.setTimeout(() => {
+        toast.classList.add('opacity-0');
+        toast._timeout = window.setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 2000);
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getSvgPoint(clientX, clientY) {
+      const pt = svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return { x: svgP.x, y: svgP.y };
+    }
+
+    function render() {
+      // Render edges first
+      edgesGroup.innerHTML = '';
+      for (const edge of state.edges) {
+        const source = state.nodes.find((n) => n.id === edge.source);
+        const target = state.nodes.find((n) => n.id === edge.target);
+        if (!source || !target) continue;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const dx = target.x - source.x;
+        const dy = target.y - source.y;
+        const mx = source.x + dx * 0.5;
+        const my = source.y + dy * 0.5;
+        const curve = 80;
+        const path = `M ${source.x} ${source.y} C ${mx} ${source.y - curve} ${mx} ${target.y + curve} ${target.x} ${target.y}`;
+
+        line.setAttribute('d', path);
+        line.setAttribute('class', `edge ${state.selected.has(edge.id) ? 'selected' : ''}`);
+        line.setAttribute('filter', 'url(#edgeGlow)');
+        edgesGroup.appendChild(line);
+      }
+
+      // Render nodes
+      nodesGroup.innerHTML = '';
+      for (const node of state.nodes) {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', `node ${state.selected.has(node.id) ? 'selected' : ''}`);
+        g.setAttribute('data-id', node.id);
+        g.setAttribute('tabindex', '0');
+        g.setAttribute('role', 'button');
+        g.setAttribute('aria-label', `Node ${node.label}`);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('class', 'node-circle');
+        circle.setAttribute('cx', node.x);
+        circle.setAttribute('cy', node.y);
+        circle.setAttribute('r', 26);
+        circle.setAttribute('fill', 'rgba(255,255,255,0.65)');
+        circle.setAttribute('stroke', 'rgba(37, 99, 235, 0.9)');
+        circle.setAttribute('stroke-width', '2');
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('class', 'node-label');
+        text.setAttribute('x', node.x);
+        text.setAttribute('y', node.y + 6);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.setAttribute('fill', 'rgba(15, 23, 42, 0.9)');
+        text.setAttribute('font-weight', '600');
+        text.textContent = node.label;
+
+        g.appendChild(circle);
+        g.appendChild(text);
+        nodesGroup.appendChild(g);
+
+        g.addEventListener('pointerdown', onNodePointerDown);
+        g.addEventListener('keydown', onNodeKeyDown);
+      }
+    }
+
+    function setModeButtonStates() {
+      connectModeBtn.classList.toggle('bg-brand-secondary/30', state.connectMode);
+      connectModeBtn.classList.toggle('border-brand-secondary/40', state.connectMode);
+      connectModeBtn.classList.toggle('bg-white/40', !state.connectMode);
+    }
+
+    function setSelected(ids) {
+      state.selected = new Set(ids);
+      render();
+    }
+
+    function clearSelection() {
+      setSelected([]);
+      state.connectSource = null;
+    }
+
+    function toggleSelection(id) {
+      if (state.selected.has(id)) {
+        state.selected.delete(id);
+      } else {
+        state.selected.add(id);
+      }
+      render();
+    }
+
+    function selectOnly(id) {
+      setSelected([id]);
+    }
+
+    function addNodeAt(point) {
+      const node = {
+        id: state.nextNodeId++,
+        x: clamp(point.x, 80, 1120),
+        y: clamp(point.y, 80, 720),
+        label: `N${state.nextNodeId - 1}`,
+      };
+      state.nodes.push(node);
+      selectOnly(node.id);
+      render();
+    }
+
+    function addEdge(sourceId, targetId) {
+      if (sourceId === targetId) return;
+      const exists = state.edges.some((e) => (e.source === sourceId && e.target === targetId) || (e.source === targetId && e.target === sourceId));
+      if (exists) return;
+
+      const edge = {
+        id: state.nextEdgeId++,
+        source: sourceId,
+        target: targetId,
+      };
+      state.edges.push(edge);
+      selectOnly(edge.id);
+      render();
+    }
+
+    function deleteSelected() {
+      const selected = Array.from(state.selected);
+      if (!selected.length) return;
+
+      const nodeIds = new Set(state.nodes.filter((n) => selected.includes(n.id)).map((n) => n.id));
+      state.edges = state.edges.filter((e) => !nodeIds.has(e.source) && !nodeIds.has(e.target) && !selected.includes(e.id));
+      state.nodes = state.nodes.filter((n) => !nodeIds.has(n.id));
+      clearSelection();
+      render();
+    }
+
+    function onNodePointerDown(event) {
+      event.stopPropagation();
+      const nodeId = Number(event.currentTarget.dataset.id);
+      const point = getSvgPoint(event.clientX, event.clientY);
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+
+      if (state.connectMode) {
+        if (!state.connectSource) {
+          state.connectSource = nodeId;
+          toastMessage('Select target node to connect.');
+        } else {
+          addEdge(state.connectSource, nodeId);
+          state.connectSource = null;
+          toastMessage('Edge created');
+        }
+        return;
+      }
+
+      if (event.shiftKey) {
+        toggleSelection(nodeId);
+      } else {
+        selectOnly(nodeId);
+      }
+
+      state.draggingNodeId = nodeId;
+      state.dragOffset.x = point.x - node.x;
+      state.dragOffset.y = point.y - node.y;
+
+      svg.setPointerCapture(event.pointerId);
+    }
+
+    function onNodeKeyDown(event) {
+      const nodeId = Number(event.currentTarget.dataset.id);
+      if (event.key === 'Enter') {
+        selectOnly(nodeId);
+      }
+      if (event.key === 'Delete') {
+        state.selected.add(nodeId);
+        deleteSelected();
+      }
+    }
+
+    function onPointerMove(event) {
+      if (!state.draggingNodeId) return;
+      const point = getSvgPoint(event.clientX, event.clientY);
+      const node = state.nodes.find((n) => n.id === state.draggingNodeId);
+      if (!node) return;
+
+      node.x = clamp(point.x - state.dragOffset.x, 60, 1140);
+      node.y = clamp(point.y - state.dragOffset.y, 60, 740);
+      render();
+    }
+
+    function onPointerUp() {
+      state.draggingNodeId = null;
+    }
+
+    function onCanvasPointerDown(event) {
+      if (state.connectMode && state.connectSource) {
+        state.connectSource = null;
+        toastMessage('Connect mode cancelled');
+        return;
+      }
+
+      addNodeAt(getSvgPoint(event.clientX, event.clientY));
+    }
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') {
+        clearSelection();
+      }
+      if (event.key === 'Delete') {
+        deleteSelected();
+      }
+    }
+
+    function getStateSnapshot() {
+      return {
+        nodes: state.nodes.map((n) => ({ id: n.id, label: n.label, x: n.x, y: n.y })),
+        edges: state.edges.map((e) => ({ id: e.id, source: e.source, target: e.target })),
+      };
+    }
+
+    addNodeBtn.addEventListener('click', () => {
+      toastMessage('Click canvas to add a node');
+      state.connectMode = false;
+      setModeButtonStates();
+    });
+
+    connectModeBtn.addEventListener('click', () => {
+      state.connectMode = !state.connectMode;
+      if (!state.connectMode) {
+        state.connectSource = null;
+      }
+      setModeButtonStates();
+      toastMessage(state.connectMode ? 'Connect mode enabled' : 'Connect mode disabled');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      deleteSelected();
+      toastMessage('Deleted selection');
+    });
+
+    resetBtn.addEventListener('click', () => {
+      state.nodes = [];
+      state.edges = [];
+      state.nextNodeId = 1;
+      state.nextEdgeId = 1;
+      clearSelection();
+      render();
+      toastMessage('Canvas reset');
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const data = JSON.stringify(getStateSnapshot(), null, 2);
+      navigator.clipboard.writeText(data).then(() => {
+        toastMessage('Copied graph JSON to clipboard');
+      }, () => {
+        toastMessage('Failed to copy; try again');
+      });
+    });
+
+    svg.addEventListener('pointerdown', (event) => {
+      if (event.target === svg) {
+        onCanvasPointerDown(event);
+      }
+    });
+
+    svg.addEventListener('pointermove', onPointerMove);
+    svg.addEventListener('pointerup', onPointerUp);
+    svg.addEventListener('pointercancel', onPointerUp);
+    window.addEventListener('keydown', onKeyDown);
+
+    // Initial render
+    render();
+    setModeButtonStates();
+  </script>
+</body>
+</html>
